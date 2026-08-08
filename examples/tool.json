@@ -1,1 +1,40 @@
-
+[
+  {
+    "name": "search_user",
+    "description": "사용자 정보를 검색합니다.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "description": "검색할 사용자의 고유 ID"
+        }
+      },
+      "required": ["user_id"]
+    }
+  },
+  {
+    "name": "search_order",
+    "description": "주문 관련 정보를 처리합니다.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "name": "cancel_order",
+    "description": "주문 관련 요청을 처리합니다.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string"
+        }
+      }
+    }
+  }
+]
