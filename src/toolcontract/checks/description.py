@@ -1,19 +1,42 @@
-def check_description_quality(tool: dict) -> list:
-    """도구의 설명(description)이 명확하고 충분한지 검사합니다."""
+def check_description_quality(tool):
     errors = []
-    
-    # 도구 이름과 설명 가져오기
-    name = tool.get("name", "알 수 없는 도구")
-    desc = tool.get("description", "")
 
-    # 1. 설명이 아예 없는 경우 (치명적 오류)
-    if not desc:
-        errors.append(f"❌ [{name}] 오류: 도구 설명(description)이 누락되었습니다.")
+    name = tool.get("name", "unknown")
+    description = tool.get("description", "")
+
+    # TC001: 설명 없음
+    if not isinstance(description, str) or not description.strip():
+        errors.append(
+            f"❌ [TC001] [{name}] Tool description이 없습니다."
+        )
         return errors
 
-    # 2. 설명이 너무 짧고 모호한 경우 (경고)
-    # 띄어쓰기 제외하고 길이가 짧으면 경고를 줍니다.
-    if len(desc.replace(" ", "")) < 15:
-        errors.append(f"⚠️ [{name}] 경고: 설명이 너무 짧습니다. ('{desc}') AI가 정확히 판단할 수 있게 더 구체적으로 적어주세요.")
+    description = description.strip()
+
+    # TC002: 지나치게 짧은 설명
+    if len(description) < 8:
+        errors.append(
+            f"⚠️ [TC002] [{name}] Tool description이 지나치게 짧습니다."
+        )
+
+    # TC003: 모호한 표현
+    vague_words = [
+        "처리합니다",
+        "관련",
+        "작업합니다",
+        "요청을 처리",
+        "정보를 처리"
+    ]
+
+    found_words = [
+        word for word in vague_words
+        if word in description
+    ]
+
+    if found_words:
+        errors.append(
+            f"⚠️ [TC003] [{name}] 모호한 표현이 포함되어 있습니다: "
+            + ", ".join(found_words)
+        )
 
     return errors

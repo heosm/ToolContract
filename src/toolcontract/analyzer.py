@@ -1,14 +1,23 @@
 import os
 import sys
 
-if sys.stdout.encoding.lower() != 'utf-8':
-    sys.stdout.reconfigure(encoding='utf-8')
-# 다른 폴더(checks, loader)의 파이썬 파일을 잘 불러오도록 경로 설정
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# src 폴더를 Python이 찾을 수 있게 먼저 등록
+sys.path.append(
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..")
+    )
+)
 
+# 그 다음 import
 from toolcontract.loader import load_tools
-from checks.description import check_description_quality
+from toolcontract.checks.description import check_description_quality
+from toolcontract.checks.parameters import check_parameters
+from toolcontract.checks.similarity import check_similarity
+from toolcontract.checks.schema import check_schema
 
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout.reconfigure(encoding="utf-8")
+    
 def analyze(file_path):
     print(f" AI 도구 명세서 품질 검사를 시작합니다...\n")
     print("-" * 50)
@@ -20,7 +29,10 @@ def analyze(file_path):
     # 2. 각 도구마다 순회하며 검사 실행
     for tool in tools:
         # description.py에서 만든 검사 함수 실행
-        errors = check_description_quality(tool)
+        errors = []
+
+        errors.extend(check_description_quality(tool))
+        errors.extend(check_parameters(tool))        
         
         if errors:
             for error in errors:
@@ -28,7 +40,13 @@ def analyze(file_path):
                 total_issues += 1
         else:
             print(f"✅ [{tool.get('name')}] 통과: 설명이 충분히 명확합니다.")
-            
+    # 3. Tool 간 description 유사도 검사
+    similarity_errors = check_similarity(tools)
+
+    for error in similarity_errors:
+        print(error)
+        total_issues += 1   
+        
     print("-" * 50)
     print(f"🏁 검사 완료! 총 {total_issues}개의 개선점이 발견되었습니다.")
 
