@@ -3,35 +3,39 @@
 from typing import List, Dict, Any
 
 class BehaviorEvaluator:
-    def __init__(self):
-        pass
-
     def check_tool_selection(self, actual_tool: str, expected_tool: str) -> bool:
-        """
-        LLM이 상황에 맞는 올바른 Tool을 선택했는지 검사합니다.
-        """
         return actual_tool == expected_tool
 
-    def check_arguments(self, actual_args: Dict[str, Any], expected_schema: Dict[str, Any]) -> bool:
+    def check_arguments(self, actual_args: Dict[str, Any], expected_args: Dict[str, Any]) -> bool:
         """
-        Tool은 맞게 선택했는데 argument를 잘못 생성하는 경우를 검사합니다.
-        (예: 필수 파라미터 누락, 타입 불일치, Hallucination 값 등)
+        필수 파라미터들이 잘 들어갔는지 간단히 검사합니다.
+        (나중에는 JSON Schema validator 등으로 고도화 가능)
         """
-        # TODO: JSON Schema 검증 또는 Pydantic 등을 이용한 argument 상세 검사 로직 구현
+        if not actual_args or not expected_args:
+            return actual_args == expected_args
+            
+        for key, value in expected_args.items():
+            if key not in actual_args:
+                return False
+            # 값까지 정확히 일치해야 하는 경우 (필요에 따라 조건 완화 가능)
+            if actual_args[key] != value:
+                return False
         return True
 
-    def calculate_metrics(self, test_results: List[Dict[str, Any]], expected_tool: str) -> Dict[str, Any]:
-        """
-        반복 테스트 결과를 분석하여 정량적인 정확도와 안정성을 계산합니다.
-        """
+    def calculate_metrics(self, test_results: List[Dict[str, Any]], expected_tool: str, expected_args: Dict[str, Any] = None) -> Dict[str, Any]:
         total_runs = len(test_results)
         if total_runs == 0:
             return {"accuracy": 0.0, "pass_count": 0, "total_runs": 0}
 
-        pass_count = sum(
-            1 for res in test_results 
-            if self.check_tool_selection(res.get("selected_tool"), expected_tool)
-        )
+        pass_count = 0
+        for res in test_results:
+            tool_passed = self.check_tool_selection(res.get("selected_tool"), expected_tool)
+            args_passed = True
+            if expected_args:
+                args_passed = self.check_arguments(res.get("arguments") or {}, expected_args)
+            
+            if tool_passed and args_passed:
+                pass_count += 1
 
         return {
             "total_runs": total_runs,
