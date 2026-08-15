@@ -1,17 +1,20 @@
 # src/toolcontract/behavior/runner.py
-
+import os
 import json
 from typing import List, Dict, Any
 from openai import OpenAI
 
+
+
 class BehaviorTestRunner:
-    def __init__(self, api_key: str = None):
-        """
-        OpenAI 클라이언트를 초기화합니다. 
-        api_key를 안 넣으면 시스템 환경변수(OPENAI_API_KEY)를 자동으로 찾습니다.
-        """
-        self.client = OpenAI(api_key=api_key)
-        self.model = "gpt-4o"
+    def __init__(self):
+        # OpenAI 대신 Groq의 base_url 사용
+        self.client = OpenAI(
+            api_key=os.getenv("GROQ_API_KEY"),
+            base_url="https://api.groq.com/openai/v1"
+        )
+        # Tool Calling이 지원되는 모델 지정
+        self.model = "llama-3.3-70b-versatile"
 
     def run_single_test(self, prompt: str, tools: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
