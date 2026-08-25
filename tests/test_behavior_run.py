@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from toolcontract.behavior.runner import BehaviorTestRunner
 from toolcontract.behavior.evaluator import BehaviorEvaluator
-
+import pytest
 
 # .env 로드
 load_dotenv()
@@ -14,7 +14,8 @@ load_dotenv()
 
 def test_behavior_run():
     # API 키 존재 확인
-    assert os.getenv("GROQ_API_KEY"), "GROQ_API_KEY가 설정되지 않았습니다."
+    if not os.getenv("GROQ_API_KEY"):
+        pytest.skip("GROQ_API_KEY가 없어 live behavior test를 건너뜁니다.")
 
     # 테스트용 Tool
     tools = [
