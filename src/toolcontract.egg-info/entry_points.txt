@@ -1,2 +1,0 @@
-[console_scripts]
-toolcontract = toolcontract.cli:main
