@@ -1,0 +1,29 @@
+[
+  {
+    "name": "사용자 조회",
+    "prompt": "사용자 ID 12345의 정보를 찾아줘.",
+    "expected_tool": "search_user",
+    "expected_args": {
+      "user_id": "12345"
+    },
+    "repeats": 3
+  },
+  {
+    "name": "주문 조회",
+    "prompt": "주문번호 123의 정보를 조회해줘.",
+    "expected_tool": "search_order",
+    "expected_args": {
+      "order_id": "123"
+    },
+    "repeats": 3
+  },
+  {
+    "name": "주문 취소",
+    "prompt": "주문번호 123을 취소해줘.",
+    "expected_tool": "cancel_order",
+    "expected_args": {
+      "order_id": "123"
+    },
+    "repeats": 3
+  }
+]
