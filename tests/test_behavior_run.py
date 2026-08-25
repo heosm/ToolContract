@@ -43,7 +43,10 @@ def test_behavior_run():
 
     print("\n===== Behavior Test 실행 =====")
 
-    runner = BehaviorTestRunner()
+    runner = BehaviorTestRunner(
+    provider="groq",
+    model="openai/gpt-oss-20b",
+)
 
     # 같은 프롬프트 3번 실행
     results = runner.run_repeated_test(

@@ -9,3 +9,10 @@ env/
 # 파이썬 캐시 파일
 __pycache__/
 *.pyc
+
+.env
+.venv-test/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
